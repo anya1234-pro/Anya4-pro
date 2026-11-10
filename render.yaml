@@ -1,0 +1,21 @@
+services:
+  - type: web
+    name: u-oyun-ai-karakter
+    runtime: node
+    plan: free
+    buildCommand: npm install --ignore-scripts
+    startCommand: node server.cjs
+    healthCheckPath: /api/health
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: HOST
+        value: 0.0.0.0
+      - key: NODE_VERSION
+        value: 22
+      - key: IMAGE_MODEL
+        value: gpt-image-2.5-sunburst
+      - key: OPENAI_API_KEY
+        sync: false
+      - key: APP_ACCESS_TOKEN
+        sync: false

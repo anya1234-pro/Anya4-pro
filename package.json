@@ -1,0 +1,14 @@
+{
+  "name": "u-oyun-ai-karakter",
+  "version": "3.0.0",
+  "private": true,
+  "description": "Ü — orijinal menüyle gerçek AI chibi karakter dönüştürme",
+  "type": "module",
+  "scripts": {
+    "start": "node server.cjs",
+    "check": "node --check server.cjs && node --check verify-live.mjs && node --check tests/smoke.mjs",
+    "test": "node tests/smoke.mjs",
+    "status": "node verify-live.mjs --status"
+  },
+  "engines": {"node": ">=20"}
+}

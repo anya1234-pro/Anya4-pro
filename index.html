@@ -1,0 +1,834 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#061309">
+<meta name="description" content="Oyun menüsünde solda yazılar, sağda profil fotoğrafı bulunan iki sütunlu oyun ekranı">
+<title>Ü • Yazılar Solda Fotoğraf Sağda</title>
+<style>
+:root{color-scheme:dark;--bg:#040c07;--panel:#09170d;--green:#adff46;--light:#d4ff93;--neon:#8dff1f;--muted:#82a18a;--line:#315737;--text:#eaffd8;--font:"Comic Sans MS","Comic Neue","Trebuchet MS",cursive,sans-serif}
+*{box-sizing:border-box}html{-webkit-text-size-adjust:100%;font-family:var(--font);font-weight:700}body{margin:0;min-height:100vh;min-height:100dvh;background:radial-gradient(ellipse 80% 70% at 50% 36%,#183821 0%,#07140b 48%,#030604 100%);color:var(--text)}
+button{font:inherit;cursor:pointer;-webkit-tap-highlight-color:transparent}button:focus-visible{outline:3px solid #dfff6e;outline-offset:4px}button:disabled{cursor:not-allowed}svg{display:block}
+.outer{min-height:100vh;min-height:100dvh;display:flex;align-items:center;justify-content:center;padding:28px 16px}
+.console{position:relative;width:min(100%,1020px);min-height:618px;overflow:hidden;border:1px solid #4a7548;border-radius:24px;background:radial-gradient(ellipse 74% 96% at 22% 44%,#183e22 0%,#0a2112 35%,#08170d 68%,#050e09 100%);box-shadow:0 0 0 6px #111d12,0 0 0 7px #355336,0 30px 80px #000b,inset 0 0 45px #0008}
+.console::before{position:absolute;inset:0;pointer-events:none;content:"";z-index:0;opacity:.18;background:repeating-linear-gradient(to bottom,transparent 0 4px,#000 5px 6px)}
+.console::after{position:absolute;content:"";pointer-events:none;inset:0;border-radius:24px;box-shadow:inset 0 0 75px 25px #0008}
+.mesh{position:absolute;inset:0;opacity:.35;background-image:linear-gradient(90deg,#35713a14 1px,transparent 1px),linear-gradient(#35713a14 1px,transparent 1px);background-size:29px 29px;mask-image:radial-gradient(circle at 28% 46%,#000,transparent 73%);pointer-events:none}
+.top,.page,.bottom{position:relative;z-index:1}.top{height:77px;padding:0 34px;display:flex;align-items:center;justify-content:space-between;gap:15px;border-bottom:1px solid #28492d;background:#04110878}
+.brand{display:flex;align-items:center;gap:13px;color:#dcffad;font-size:15px;letter-spacing:.16em;text-shadow:0 0 14px #83ff47a6}.brand-glyph{width:33px;height:33px;display:grid;place-items:center;color:#0f2d11;background:linear-gradient(135deg,#d5ff80,#70dd19);border-radius:8px;box-shadow:0 0 16px #8fff3588;font-size:20px;transform:rotate(-7deg)}
+.top-meta{display:flex;align-items:center;gap:9px;font-size:10px;color:#a1c1a0;letter-spacing:.15em;white-space:nowrap}.live-dot{width:8px;height:8px;border-radius:100%;background:var(--neon);box-shadow:0 0 10px var(--neon);animation:blink 2s ease-in-out infinite}
+.page[hidden],.busy-layer[hidden],.modal[hidden]{display:none!important}.page{min-height:496px;animation:show .25s ease-out}@keyframes show{from{opacity:.45;transform:translateY(7px)}to{opacity:1;transform:translateY(0)}}
+.menu-layout{display:grid;grid-template-columns:56% 44%;align-items:center;min-height:495px;padding:14px 26px 9px 42px;gap:8px}
+.visual{height:100%;position:relative;min-height:430px;display:flex;flex-direction:column;justify-content:center;align-items:center;overflow:hidden;justify-self:end}
+.visual::after{content:"";width:360px;height:360px;position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);border-radius:50%;background:radial-gradient(circle,#6aff1330 0,#95ff0712 34%,transparent 69%);filter:blur(14px);pointer-events:none}
+.orb{width:min(110%,440px);position:relative;z-index:1;overflow:visible;filter:drop-shadow(0 0 17px #68ff326b);animation:float 6s ease-in-out infinite}
+.orb .rim{transform-origin:center;animation:orb-turn 26s linear infinite}.orb .rim.r2{animation-duration:34s;animation-direction:reverse}
+@keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-7px)}}@keyframes orb-turn{to{transform:rotate(360deg)}}@keyframes blink{50%{opacity:.35}}
+.visual-tag{position:absolute;bottom:12px;left:42px;z-index:2;font-size:10px;letter-spacing:.22em;color:#b6ed92}.visual-tag strong{display:block;color:#dbffb2;font-size:13px;margin-top:6px;letter-spacing:.07em}
+.main-controls{position:relative;padding:30px 18px 20px 0;z-index:2}
+.code{display:flex;align-items:center;gap:10px;font-size:10px;letter-spacing:.2em;color:#96d772;text-transform:uppercase;margin-bottom:12px}.code::before{content:"";width:19px;height:3px;border-radius:2px;background:var(--neon);box-shadow:0 0 11px var(--neon)}
+h1{margin:0;color:#dfffba;font-size:clamp(29px,4.2vw,49px);line-height:1.12;text-shadow:0 0 20px #aaff5170;letter-spacing:.01em}
+.sub{font-size:14px;color:#9bb99b;margin:12px 0 29px;line-height:1.55;max-width:420px}
+.menu-buttons{display:flex;flex-direction:column;gap:15px}
+.menu-btn{width:100%;min-height:73px;padding:11px 23px 11px 12px;display:flex;align-items:center;gap:15px;text-align:left;position:relative;clip-path:polygon(0 0,97% 0,100% 50%,97% 100%,0 100%);border:0;color:#c7f8ac;background:linear-gradient(95deg,#183a20 0%,#113119 72%,#0c2815 100%);box-shadow:inset 0 0 0 1px #4a7649;transition:background .15s,transform .15s,filter .15s}
+.menu-btn:hover:not(:disabled),.menu-btn:focus-visible{filter:brightness(1.18);transform:translateX(3px)}.menu-btn:active:not(:disabled){transform:translateX(5px) scale(.99)}
+.menu-btn.primary{color:#143016;background:linear-gradient(90deg,#c6ff78 0%,#96ed35 60%,#6cd119 100%);box-shadow:inset 0 0 0 1px #e6ffb4;filter:drop-shadow(0 0 12px #7fff2755)}
+.menu-btn.primary:hover{filter:brightness(1.08) drop-shadow(0 0 16px #7fff27aa)}
+.menu-btn:disabled{background:linear-gradient(95deg,#16261a,#102016);color:#77977e;box-shadow:inset 0 0 0 1px #33513a;opacity:.84}
+.menu-btn .node{display:grid;place-items:center;flex:none;width:47px;height:47px;border-radius:50%;border:3px solid #7cc94e;background:#12301a;color:#ceff9c;box-shadow:inset 0 0 8px #79ff3b44,0 0 9px #6ef42e61}
+.menu-btn.primary .node{border-color:#183c20;color:#dbffad;background:#1b421b;box-shadow:0 0 0 3px #efffc562}
+.menu-btn:disabled .node{border-color:#547055;color:#87ab89;box-shadow:none;background:#1d3321}
+.menu-btn .node svg{width:22px;height:22px;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;fill:none}
+.label-text{flex:1;line-height:1.2;font-size:clamp(13px,2vw,17px);font-weight:700}.arrow{font-size:23px;opacity:.77;padding-right:9px}
+.unlock-hint{margin:10px 0 0 6px;color:#aacc9b;font-size:11px;line-height:1.5}.unlock-hint[hidden]{display:none}
+.footer{height:44px;padding:0 34px;position:relative;z-index:2;border-top:1px solid #203c27;display:flex;justify-content:space-between;align-items:center;font-size:10px;color:#759376;letter-spacing:.09em;gap:12px}.footer strong{color:#c5fa96;font-size:11px}
+/* Photo screen in the same retro green console visual language */
+.photo-layout{display:block;padding:25px 38px 33px}
+.photo-copy{padding-right:8px}.back{border:0;padding:8px 0 13px;background:none;color:#bfff84;font-size:12px;letter-spacing:.06em}
+.photo-heading{font-size:clamp(25px,4vw,37px);margin:13px 0 8px}.photo-lead{color:#a9c4a5;font-size:13px;margin:0 0 16px;line-height:1.6;max-width:440px}
+.photo-frame{position:relative;width:100%;min-height:370px;border:1px solid #56884a;background:radial-gradient(circle at center,#1b3c1c,#0c2412 65%,#06140b);border-radius:13px 13px 8px 8px;display:grid;place-items:center;overflow:hidden;box-shadow:inset 0 0 26px #0008,0 0 20px #61ff1923}
+.photo-frame::before,.photo-frame::after{content:"";position:absolute;width:220px;height:220px;border:1px solid #79c95648;border-radius:50%}.photo-frame::after{width:162px;height:162px}
+.photo-frame svg{width:60px;height:60px;color:#abfc6c;position:relative;z-index:1}.photo-frame span{font-size:13px;color:#c1ef9c;position:relative;z-index:1;letter-spacing:.11em}
+.photo-frame img{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;background:#06150b;z-index:3;display:none}.photo-frame.has-photo img{display:block}
+.photo-frame.has-photo::before,.photo-frame.has-photo::after,.photo-frame.has-photo>svg,.photo-frame.has-photo>span{display:none}
+.photo-status{font-size:11px;color:#adc7a5;line-height:1.6;margin:8px 0 15px;min-height:18px}.photo-tools{padding-top:4px;max-width:480px}.photo-tools .preview-panel{margin-top:12px;max-width:100%}
+.serial{font-size:11px;letter-spacing:.18em;color:#bcf68f;margin-bottom:12px}
+.steps{display:flex;flex-direction:column;gap:12px;margin:18px 0 25px}.step{display:flex;align-items:center;gap:12px;color:#7b9b80;font-size:13px}
+.step .num{display:grid;place-items:center;width:34px;height:34px;flex:none;border:2px solid #426744;border-radius:50%}.step.active{color:#d0ff9d}.step.active .num{border-color:#b4fb67;box-shadow:0 0 11px #8cff3777}.step.done{color:#b7e99a}.step.done .num{background:#274d25;border-color:#6eae3c}
+.tool-btn{width:100%;padding:15px;border-radius:8px;border:1px solid #a9ee5c;display:flex;align-items:center;justify-content:center;gap:8px;background:linear-gradient(90deg,#b4f967,#7dd72b);color:#153219;font-size:15px;min-height:54px;margin-bottom:12px}
+.tool-btn.alt{background:#142f1d;border-color:#4d8542;color:#b9e6a8;font-size:13px;min-height:49px}.tool-btn:disabled{opacity:.5}/* Önizleme ile yüklenen fotoğraf yalnızca aynı .photo-frame çerçevesini kullanır. */.preview-panel{position:relative;border:0;background:transparent;border-radius:0;padding:0;box-shadow:none;overflow:visible}.preview-panel::after{content:none}.preview-panel>*{position:relative;z-index:1}.preview-label{font-size:11px;letter-spacing:.18em;color:#bcf68f;margin:0 0 12px}.preview-note{margin:12px 0 0;color:#98ba98;font-size:11px;line-height:1.55}
+.file-input{position:absolute;width:1px;height:1px;opacity:0;pointer-events:none}
+.tiny-info{color:#83a584;font-size:11px;line-height:1.6}
+.busy-layer{position:absolute;inset:0;z-index:9;display:flex;align-items:center;justify-content:center;background:#031006ec;padding:20px;text-align:center}
+.busy-card{width:min(100%,420px);border:1px solid #78d13d;background:#0e2715;border-radius:15px;padding:30px;box-shadow:0 0 55px #71fc2244}.busy-spin{width:65px;height:65px;margin:0 auto 20px;border:4px solid #376a2b;border-top-color:#bfff70;border-radius:50%;animation:spin .75s linear infinite;box-shadow:0 0 18px #9fff4444}@keyframes spin{to{transform:rotate(360deg)}}.busy-title{font-size:24px;margin:0 0 9px}.busy-label{font-size:12px;color:#a9d799}.loading-line{margin-top:20px;height:6px;border-radius:9px;overflow:hidden;background:#2a4d26}.loading-line>div{width:37%;height:100%;background:#acfa50;animation:sweep 1.1s ease-in-out infinite alternate}@keyframes sweep{from{transform:translateX(-100%)}to{transform:translateX(280%)}}
+.modal{position:fixed;inset:0;display:grid;place-items:center;background:#010601d9;z-index:20;padding:20px}.modal-box{max-width:390px;width:100%;border:1px solid #a0e065;padding:26px;text-align:center;background:#102a16;border-radius:14px;box-shadow:0 0 40px #63d82733}.modal-box h2{font-size:24px;margin:0 0 9px}.modal-box p{font-size:13px;color:#c3dcb5;line-height:1.65}.modal-box button{background:#a6f352;color:#143016;border:0;border-radius:8px;padding:11px 24px;margin-top:12px}
+@media(max-width:770px){.console{min-height:0}.menu-layout{grid-template-columns:58% 42%;padding:15px 22px 24px 22px}.visual{min-height:390px}.visual-tag{left:17px}.main-controls{padding:25px 8px 20px 0}.photo-layout{padding:23px;grid-template-columns:1.05fr .95fr;gap:17px}.photo-frame{min-height:300px}.footer{padding:0 22px}}
+@media(max-width:600px){.outer{padding:0;align-items:stretch}.console{width:100%;min-height:100dvh;border:0;border-radius:0;box-shadow:none;display:flex;flex-direction:column}.top{height:68px;min-height:68px;padding:0 19px}.brand{font-size:13px;letter-spacing:.1em}.brand-glyph{width:28px;height:28px;font-size:17px}.top-meta{font-size:9px;letter-spacing:.04em}.menu-layout{display:flex;flex-direction:column;align-items:stretch;padding:0 19px 23px;gap:0;min-height:0}.main-controls{order:1;padding:12px 0 8px}.visual{order:2;height:200px;min-height:200px;flex:none;overflow:visible;justify-self:stretch}.orb{width:240px;max-height:225px}.visual::after{width:250px;height:200px}.visual-tag{bottom:3px;left:9px;font-size:9px}.visual-tag strong{font-size:10px;margin-top:1px}.code{margin-bottom:8px;font-size:9px}h1{font-size:33px}.sub{margin:7px 0 20px;font-size:12px}.menu-buttons{gap:11px}.menu-btn{min-height:66px;padding:8px 17px 8px 11px}.menu-btn .node{width:43px;height:43px}.menu-btn .node svg{width:21px;height:21px}.label-text{font-size:14px}.unlock-hint{font-size:10px}.footer{margin-top:auto;padding:0 19px;height:46px;min-height:46px;font-size:9px}.footer strong{font-size:10px}.photo-layout{display:flex;flex-direction:column;padding:16px 20px 25px}.photo-copy{order:1;padding-right:0}.preview-panel{order:2;width:100%;margin-top:8px}.back{padding:8px 0}.photo-heading{font-size:27px}.photo-lead{margin-bottom:13px}.photo-frame{min-height:218px}.photo-tools{padding-top:8px;max-width:none}.steps{flex-direction:row;gap:5px;margin:9px 0 15px}.step{flex:1;flex-direction:column;gap:6px;text-align:center;font-size:10px}.step .num{width:29px;height:29px}.tool-btn{min-height:47px;margin-bottom:9px}.photo-status{margin-bottom:4px}.tiny-info{display:none}.preview-note{display:none}}
+@media(max-width:370px){.brand{font-size:11px}.menu-layout{padding-left:15px;padding-right:15px}.visual{height:165px;min-height:165px}.orb{width:215px;max-height:180px}h1{font-size:29px}.menu-btn{min-height:60px}.sub{margin-bottom:14px}.footer{font-size:8px}}
+@media(prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.001ms!important;transition-duration:.001ms!important}}
+
+/* SOLDAN YAZI, SAĞDAN FOTOĞRAF: her ekran boyutunda kalıcı iki sütun */
+.menu-layout{grid-template-columns:minmax(0,1.14fr) minmax(0,.86fr)}
+.menu-layout>.main-controls,.menu-layout>.visual,.photo-layout>.photo-copy,.photo-layout>.preview-panel{min-width:0}
+.main-photo-side{align-self:stretch;justify-self:stretch;justify-content:flex-start;padding:146px 8px 44px;min-width:0;min-height:420px}
+.profile-light{position:absolute;inset:14% 0 10%;background:radial-gradient(ellipse,#77fd362f,transparent 63%);filter:blur(21px);pointer-events:none}
+.profile-frame{width:100%;max-width:340px;position:relative;z-index:2;border:2px solid #648c42;box-shadow:inset 0 0 18px #3b8e283d,0 0 36px #6bfc242a;background:linear-gradient(145deg,#123219,#061409);border-radius:15px;padding:12px}
+.profile-frame-top{font-size:11px;letter-spacing:.12em;color:#c7ff97;display:flex;align-items:center;gap:7px;padding:0 4px 10px}
+.indicator{display:block;width:7px;height:7px;background:#a6ff51;box-shadow:0 0 9px #82ff2d;border-radius:50%}
+.main-photo-area{position:relative;width:100%;aspect-ratio:4/5;border-radius:8px;border:1px solid #487744;display:flex;align-items:center;justify-content:center;overflow:hidden;background:radial-gradient(ellipse at center,#315e263e,#07140c 68%)}
+.main-photo-area:before{content:'';position:absolute;inset:12px;pointer-events:none;border:1px dashed #517f4360}
+.main-photo-area .photo-placeholder{width:min(76%,180px);filter:drop-shadow(0 0 16px #67fd2766)}
+.main-photo-area img{display:none;position:absolute;inset:0;width:100%;height:100%;object-fit:contain;background:#030b06}
+.main-photo-area.has-photo img{display:block}
+.main-photo-area.has-photo .photo-placeholder,.main-photo-area.has-photo .main-photo-empty{display:none}
+.main-photo-empty{position:absolute;bottom:13px;font-size:10px;line-height:1.4;letter-spacing:.08em;text-align:center;color:#aed690}
+.profile-frame-footer{font-size:10px;color:#99d87e;text-align:center;letter-spacing:.14em;margin-top:10px}
+.photo-layout{grid-template-columns:minmax(0,1.12fr) minmax(0,.88fr)}
+.preview-panel{align-self:center}
+.photo-frame{height:clamp(250px,33vw,420px)}
+@media(max-width:770px){
+ .menu-layout{grid-template-columns:minmax(0,1.14fr) minmax(0,.86fr)}
+ .main-photo-side{min-height:350px;justify-content:flex-start;padding:132px 0 38px}
+ .visual-tag{left:0}
+ .photo-layout{grid-template-columns:minmax(0,1.12fr) minmax(0,.88fr)}
+}
+@media(max-width:600px){
+ .menu-layout{display:grid;grid-template-columns:minmax(0,1.14fr) minmax(0,.86fr);align-items:center;column-gap:10px;padding:26px 13px 22px;min-height:calc(100dvh - 124px)}
+ .main-controls{order:unset;padding:0;align-self:center}
+ .main-photo-side{order:unset;height:auto;min-height:310px;justify-content:flex-start;padding:96px 0 31px;overflow:visible;align-self:center}
+ .profile-frame{padding:7px;border-radius:11px;border-width:1px}
+ .profile-frame-top{font-size:8px;letter-spacing:.025em;gap:4px;padding:0 0 7px}
+ .profile-frame-footer{font-size:8px;letter-spacing:.04em;line-height:1.3;margin-top:7px}
+ .main-photo-empty{font-size:8px;line-height:1.35;bottom:7px;letter-spacing:0;padding:0 3px}
+ .visual-tag{left:2px;bottom:0;font-size:8px;letter-spacing:0}
+ .visual-tag strong{font-size:9px;letter-spacing:0;margin-top:2px}
+ .code{font-size:8px;letter-spacing:.06em;gap:5px}
+ .code:before{width:9px}
+ h1{font-size:clamp(23px,7vw,35px)}
+ .sub{font-size:11px;line-height:1.42;margin:8px 0 15px}
+ .menu-buttons{gap:11px}
+ .menu-btn{padding:10px 8px;min-height:69px;gap:5px;clip-path:polygon(0 0,96% 0,100% 50%,96% 100%,0 100%)}
+ .menu-btn .node{display:none}
+ .label-text{font-size:clamp(11px,3vw,14px);line-height:1.15;overflow-wrap:anywhere}
+ .arrow{font-size:17px;padding:0;flex:none}
+ .unlock-hint{font-size:10px;margin:9px 0 0}
+ .photo-layout{display:grid;grid-template-columns:minmax(0,1.16fr) minmax(0,.84fr);align-items:start;gap:10px;padding:20px 12px 22px}
+ .photo-copy{order:unset}
+ .preview-panel{order:unset;margin-top:50px;padding:7px;min-width:0;border-radius:12px}
+ .preview-label{font-size:8px;letter-spacing:0;margin:0 0 8px;line-height:1.35}
+ .photo-frame{min-height:0;height:clamp(205px,66vw,350px);padding:4px;display:flex;flex-direction:column;gap:7px}
+ .photo-frame:before{width:95px;height:95px}
+ .photo-frame:after{width:70px;height:70px}
+ .photo-frame svg{width:31px;height:31px}
+ .photo-frame span{font-size:9px;letter-spacing:0;overflow-wrap:anywhere;line-height:1.25;text-align:center}
+ .photo-heading{font-size:clamp(18px,5.5vw,26px);line-height:1.1}
+ .photo-lead{font-size:10px;line-height:1.5;margin:8px 0 10px}
+ .photo-status{font-size:10px;line-height:1.4}
+ .serial{font-size:9px;letter-spacing:.02em;line-height:1.4}
+ .steps{flex-direction:column;gap:7px;margin:8px 0 12px}
+ .step{flex-direction:row;text-align:left;gap:6px;font-size:10px}
+ .step .num{width:25px;height:25px;font-size:9px}
+ .tool-btn{min-height:45px;font-size:11px;line-height:1.25;padding:7px 6px}
+ .tool-btn.alt{font-size:10px;min-height:43px}
+ .back{font-size:10px}
+ .preview-note{display:none}
+ .footer{padding:0 12px}
+}
+@media(max-width:370px){
+ .menu-layout{padding:16px 9px;column-gap:8px}
+ .main-photo-side{height:auto;min-height:270px;padding-top:84px}
+ .profile-frame-top,.profile-frame-footer{font-size:7px}
+ .label-text{font-size:11px}
+ .menu-btn{min-height:62px}
+ .sub{font-size:10px}
+ .photo-layout{padding:15px 8px;gap:7px}
+ .photo-lead{font-size:9px}
+ .preview-panel{margin-top:45px}
+ .step{font-size:9px}
+}
+
+
+/* Sadece sağdaki ana menü görseli: önceki neon enerji sembolü. */
+.main-photo-area .photo-placeholder{display:block!important;width:min(99%,330px);height:auto;max-height:100%;position:relative;z-index:1;filter:drop-shadow(0 0 20px #7fff31a0);animation:float 6s ease-in-out infinite}
+.main-photo-area .photo-placeholder .rim{transform-origin:center;animation:orb-turn 26s linear infinite}
+.main-photo-area .photo-placeholder .rim.r2{animation-duration:34s;animation-direction:reverse}
+.main-photo-area img{display:none!important}
+.main-photo-area .main-photo-empty{display:none!important}
+
+/* Kristal Kalkan v2 — yalnızca sağ amblemin ışık ve hareket detayları */
+.main-photo-area .crystal-emblem{filter:drop-shadow(0 0 8px #a1ff72b7) drop-shadow(0 0 24px #65ff3490)}
+.main-photo-area .crystal-emblem .crystal-pulse{transform-origin:200px 202px;animation:crystalBeat 3.1s ease-in-out infinite}
+.main-photo-area .crystal-emblem .crystal-sheen{animation:crystalShine 4s ease-in-out infinite}
+.main-photo-area .crystal-emblem .crystal-sparks{animation:crystalTwinkle 2.5s ease-in-out infinite}
+@keyframes crystalBeat{0%,100%{opacity:.34;transform:scale(.95)}50%{opacity:.78;transform:scale(1.08)}}
+@keyframes crystalShine{0%,100%{opacity:.06}45%,60%{opacity:.52}}
+@keyframes crystalTwinkle{0%,100%{opacity:.38}50%{opacity:1}}
+@media(prefers-reduced-motion:reduce){.main-photo-area .crystal-emblem .crystal-pulse,.main-photo-area .crystal-emblem .crystal-sheen,.main-photo-area .crystal-emblem .crystal-sparks{animation:none}}
+
+/* Onizleme secim cercevesi ve yuklenmis fotograf ayni 1:1 kare alani kullanir.
+   Sistem fotograflari 480x480 olarak kaydeder; yukleme oncesi/sonrasi boyut sabittir. */
+.photo-tools .preview-panel .photo-frame,
+.photo-tools .preview-panel .photo-frame.has-photo {
+  box-sizing: border-box;
+  width: 100%;
+  max-width: 480px;
+  aspect-ratio: 1 / 1;
+  height: auto;
+  min-height: 0;
+  padding: 0;
+  flex: none;
+  align-self: stretch;
+}
+.photo-tools .preview-panel .photo-frame img {
+  box-sizing: border-box;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+/* Fotoğraf yükleme: önizleme ekranın en sağ üstünde, yükleme öncesi/sonrası kare boyutu sabit. */
+#photo-screen .photo-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1.12fr) minmax(0, .88fr);
+  align-items: start;
+  gap: 20px;
+}
+#photo-screen .photo-layout > .photo-copy {min-width:0; padding-right:0;}
+#photo-screen .photo-layout > .preview-panel {
+  display: block;
+  min-width: 0;
+  width: 100%;
+  margin: 0;
+  padding: 0;
+  align-self: start;
+  justify-self: end;
+}
+#photo-screen .photo-layout > .preview-panel .photo-frame,
+#photo-screen .photo-layout > .preview-panel .photo-frame.has-photo {
+  box-sizing: border-box;
+  display: grid;
+  width: 100%;
+  max-width: 480px;
+  aspect-ratio: 1 / 1;
+  height: auto;
+  min-height: 0;
+  padding: 0;
+}
+#photo-screen .photo-layout > .preview-panel .photo-frame img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+@media (max-width: 600px) {
+  #photo-screen .photo-layout {
+    grid-template-columns: minmax(0, 1.16fr) minmax(0, .84fr);
+    gap: 10px;
+  }
+  #photo-screen .photo-layout > .preview-panel {margin:0; padding:0;}
+}
+@media (max-width: 370px) {
+  #photo-screen .photo-layout {gap:7px;}
+}
+
+/* Fotoğraf yükleme ekranı: Önizleme Alanı başlığı,
+   soldaki ANA MENÜYE DÖN yazısının üst hizasına eşitlendi.
+   Çerçevenin genişliği, yüksekliği ve diğer alanlar korunur. */
+#photo-screen .photo-layout > .preview-panel {
+  margin-top: 9px;
+}
+
+/* Önizleme alanının hemen altında kullanıcı tarafından eklenen karakter görseli. */
+#photo-screen .preview-panel .character-example {
+  width:100%; margin-top:18px; padding:0;
+  border:0; border-radius:0;
+  background:transparent;
+  box-shadow:none;
+}
+#photo-screen .character-example-heading {
+  display:flex; align-items:center; gap:8px; color:#c7ff97;
+  font-size:11px; letter-spacing:.06em; margin-bottom:10px;
+}
+#photo-screen .character-example-canvas {
+  width:100%; aspect-ratio:994 / 1100; max-height:500px;
+  background:transparent;
+  border:0; border-radius:0;
+  overflow:hidden; display:grid; place-items:center;
+}
+@media (max-width:600px){
+  #photo-screen .preview-panel .character-example{padding:0;margin-top:12px}
+  #photo-screen .character-example-heading{font-size:8px;letter-spacing:0;gap:5px}
+}
+
+/* Çerçevesiz karakter örneği – yalnızca önizleme alanının altındaki figür. */
+#photo-screen .character-example-canvas {
+  width:100%;
+  aspect-ratio:994 / 1100;
+  max-height:500px;
+  background:none;
+  border:0;
+  border-radius:0;
+  box-shadow:none;
+  overflow:visible;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+}
+#photo-screen .character-example-image {
+  display:none;
+  width:100%;
+  height:100%;
+  object-fit:contain;
+  object-position:center;
+  border:0;
+  border-radius:0;
+  outline:0;
+  box-shadow:none;
+  background:transparent;
+  pointer-events:none;
+}
+#photo-screen .character-example-empty{width:100%;height:100%;background:transparent}
+#photo-screen .character-example-canvas.has-photo .character-example-image{display:block}
+#photo-screen .character-example-canvas.has-photo .character-example-empty{display:none}
+
+/* Photo-selected pose concepts; keep unfilled area fully transparent. */
+#photo-screen .character-example-canvas{min-height:0;aspect-ratio:250/315;max-height:500px;overflow:visible;background:none;border:0;box-shadow:none}
+#photo-screen #pose-scene{width:100%;height:100%;display:grid;place-items:center}
+#photo-screen #pose-scene svg{width:100%;height:100%;display:block;overflow:visible;filter:drop-shadow(0 5px 10px #020a05bb)}
+#photo-screen .pose-picker[hidden]{display:none!important}
+#photo-screen .pose-picker{display:flex;gap:5px;justify-content:center;margin-top:7px}
+#photo-screen .pose-chip{flex:1;min-width:0;max-width:66px;min-height:31px;background:#0d2114;border:1px solid #538d43;border-radius:7px;color:#bdf78d;cursor:pointer;font:700 12px 'Comic Sans MS',sans-serif}
+#photo-screen .pose-chip.active{background:#8fea47;color:#153014;border-color:#dbffb9}
+
+/* Fotoğraftan hazırlanmış çibi TASLAĞI için canlı animasyon: çevrimdışı çalışır. */
+#photo-screen .character-example-canvas{aspect-ratio:260/318;overflow:visible}
+#photo-screen .pose-scene{overflow:visible}
+#photo-screen .pose-scene svg{overflow:visible;transform-origin:center bottom}
+#photo-screen .pose-chip.motion-toggle{max-width:90px;min-width:68px;background:#183921;color:#d3ffb3}
+#photo-screen .pose-chip.motion-toggle[aria-pressed="false"]{background:#263020;color:#ffeab8;border-color:#9a9051}
+#photo-screen .pose-scene .avatar-figure,
+#photo-screen .pose-scene .avatar-head,
+#photo-screen .pose-scene .avatar-arm-left,
+#photo-screen .pose-scene .avatar-arm-right,
+#photo-screen .pose-scene .avatar-feet,
+#photo-screen .pose-scene .avatar-shadow{
+  transform-box:fill-box;transform-origin:center center;will-change:transform;
+}
+#photo-screen .pose-scene .avatar-figure{animation:idle-bob 2.15s ease-in-out infinite}
+#photo-screen .pose-scene .avatar-head{animation:head-move 2.15s ease-in-out infinite}
+#photo-screen .pose-scene .avatar-arm-left{animation:left-guard 1.6s ease-in-out infinite}
+#photo-screen .pose-scene .avatar-arm-right{animation:right-guard 1.6s ease-in-out infinite}
+#photo-screen .pose-scene .avatar-shadow{animation:shadow-breathe 2.15s ease-in-out infinite}
+#photo-screen .pose-scene .pose-1 .avatar-figure{animation:punch-body 1.35s ease-in-out infinite}
+#photo-screen .pose-scene .pose-1 .avatar-head{animation:punch-head 1.35s ease-in-out infinite}
+#photo-screen .pose-scene .pose-1 .avatar-arm-left{animation:left-guard 1.35s ease-in-out infinite}
+#photo-screen .pose-scene .pose-1 .avatar-arm-right{animation:right-punch 1.35s ease-in-out infinite}
+#photo-screen .pose-scene .pose-1 .avatar-shadow{animation:shadow-punch 1.35s ease-in-out infinite}
+#photo-screen .pose-scene .pose-2 .avatar-figure{animation:jump-body 1.75s cubic-bezier(.45,0,.35,1) infinite}
+#photo-screen .pose-scene .pose-2 .avatar-head{animation:jump-head 1.75s ease-in-out infinite}
+#photo-screen .pose-scene .pose-2 .avatar-arm-left{animation:jump-left 1.75s ease-in-out infinite}
+#photo-screen .pose-scene .pose-2 .avatar-arm-right{animation:jump-right 1.75s ease-in-out infinite}
+#photo-screen .pose-scene .pose-2 .avatar-feet{animation:jump-feet 1.75s ease-in-out infinite}
+#photo-screen .pose-scene .pose-2 .avatar-shadow{animation:shadow-jump 1.75s ease-in-out infinite}
+#photo-screen .pose-scene.is-paused svg *,#photo-screen .pose-scene.is-paused svg{animation-play-state:paused!important}
+@keyframes idle-bob{0%,100%{transform:translateY(0) rotate(-.7deg)}50%{transform:translateY(-4px) rotate(.7deg)}}
+@keyframes head-move{0%,100%{transform:rotate(-1.5deg)}50%{transform:rotate(1.5deg)}}
+@keyframes left-guard{0%,100%{transform:rotate(-4deg) translateY(1px)}50%{transform:rotate(3deg) translateY(-2px)}}
+@keyframes right-guard{0%,100%{transform:rotate(4deg) translateY(-1px)}50%{transform:rotate(-3deg) translateY(2px)}}
+@keyframes shadow-breathe{0%,100%{transform:scaleX(1);opacity:.3}50%{transform:scaleX(.92);opacity:.2}}
+@keyframes punch-body{0%,20%,75%,100%{transform:translateX(0) translateY(0) rotate(0)}38%{transform:translateX(-5px) translateY(3px) rotate(-3deg)}51%{transform:translateX(7px) translateY(-2px) rotate(2deg)}}
+@keyframes punch-head{0%,35%,78%,100%{transform:rotate(0)}52%{transform:rotate(-6deg)}}
+@keyframes right-punch{0%,26%,78%,100%{transform:translate(0,0) scale(1)}48%{transform:translate(17px,-12px) scale(1.11)}}
+@keyframes shadow-punch{0%,100%{transform:scaleX(1)}50%{transform:scaleX(.89) translateX(-4px)}}
+@keyframes jump-body{0%,15%,82%,100%{transform:translateY(0) scaleY(1)}29%{transform:translateY(3px) scaleY(.97)}51%{transform:translateY(-23px) scaleY(1.02)}70%{transform:translateY(-9px) scaleY(1)}}
+@keyframes jump-head{0%,27%,82%,100%{transform:rotate(0)}51%{transform:rotate(4deg)}}
+@keyframes jump-left{0%,18%,100%{transform:rotate(0)}48%{transform:rotate(-15deg) translateY(-3px)}}
+@keyframes jump-right{0%,18%,100%{transform:rotate(0)}48%{transform:rotate(13deg) translateY(-4px)}}
+@keyframes jump-feet{0%,30%,82%,100%{transform:translateY(0) scaleX(1)}53%{transform:translateY(-2px) scaleX(.94)}}
+@keyframes shadow-jump{0%,25%,82%,100%{transform:scaleX(1);opacity:.33}53%{transform:scaleX(.66);opacity:.13}}
+@media(prefers-reduced-motion:reduce){#photo-screen .pose-scene svg *{animation:none!important}}
+
+
+/* Çerçevesiz karakter alanı; yeni bir fotoğraf yüklenince gerçek yapay zekâ çıktısı gösterilir. */
+#photo-screen .character-example-canvas{border:0!important;box-shadow:none!important;background:transparent!important;aspect-ratio:1/1;overflow:visible!important;max-height:500px}
+#photo-screen .pose-scene{width:100%;height:100%;display:grid;place-items:center;overflow:visible}
+#photo-screen .pose-scene .generated-character{width:100%;height:100%;display:block;object-fit:contain;object-position:center;filter:drop-shadow(0 8px 8px #030a06a0);animation:chibi-guard 1.8s ease-in-out infinite;transform-origin:50% 88%;will-change:transform}
+#photo-screen .pose-scene .generated-character.pose-1{animation:chibi-punch 1.15s ease-in-out infinite}
+#photo-screen .pose-scene .generated-character.pose-2{animation:chibi-jump 1.5s ease-in-out infinite}
+#photo-screen .pose-scene.is-paused .generated-character{animation-play-state:paused!important}
+#photo-screen .character-ai-status{font-size:10px;color:#b2df91;text-align:center;line-height:1.4;margin:5px 0 8px;white-space:normal}
+#photo-screen .character-ai-status.error{color:#ffd9a1}
+#photo-screen .model-info{font-size:9px;line-height:1.45;color:#8ead82;margin:6px 0 10px}
+#photo-screen #local-character{background:#0b2217;border-color:#4c7452;color:#aad3a9}
+#photo-screen .character-retry{width:100%;background:#173b20;border:1px solid #67b657;border-radius:7px;color:#d9ffbd;font:700 11px var(--font);padding:9px;margin:4px 0 6px;cursor:pointer}
+#photo-screen .character-retry:disabled{opacity:.55;cursor:wait}
+@keyframes chibi-guard{0%,100%{transform:translateY(0) rotate(-1deg)}50%{transform:translateY(-5px) rotate(1deg)}}
+@keyframes chibi-punch{0%,100%{transform:translateX(0) rotate(-2deg) scale(1)}50%{transform:translateX(8px) rotate(3deg) scale(1.035)}}
+@keyframes chibi-jump{0%,100%{transform:translateY(0) scale(1)}48%{transform:translateY(-21px) scale(1.02)}80%{transform:translateY(0) scale(.98,1.015)}}
+@media (prefers-reduced-motion:reduce){#photo-screen .pose-scene .generated-character{animation:none!important}}
+
+/* İnternet/API yoksa manuel karakter ekleme seçeneği. Boş alan korunur. */
+#photo-screen .character-manual {background:#10291a;border-color:#538947;color:#b6e7a2;opacity:.95;display:block;margin-top:7px}
+#photo-screen .character-retry[hidden] {display:none !important}
+#photo-screen .character-ai-status {overflow-wrap:anywhere;white-space:normal}
+#photo-screen .character-ai-status.error {color:#ffcaad}
+
+/* Tamamen çevrimdışı çalışan yüz yerleştirme ayarları */
+#photo-screen .face-adjust-controls[hidden]{display:none!important}
+#photo-screen .face-adjust-controls{display:flex;flex-direction:column;gap:7px;margin:8px 0 4px;padding:9px;border:1px solid #4d8542;border-radius:8px;background:#0c2313}
+#photo-screen .face-adjust-controls label{display:flex;flex-direction:column;gap:2px;color:#c7ecaa;font-size:10px;line-height:1.5}
+#photo-screen .face-adjust-controls input[type=range]{width:100%;accent-color:#92ef44;min-height:24px}
+#photo-screen #face-adjust-toggle{font-size:10px;padding:8px}
+#photo-screen #face-apply{font-size:10px;padding:8px;min-height:34px}
+#photo-screen .pose-scene img.generated-character{max-height:440px}
+
+/* Yalnızca mobil hız ve taşma düzeltmesi; menünün renkleri/yerleşimi aynı. */
+#photo-screen .character-example-canvas{
+  aspect-ratio:3 / 4!important;
+  height:auto!important;
+  overflow:visible!important;
+}
+#photo-screen .pose-scene{min-height:0;max-height:100%;}
+#photo-screen .pose-scene .generated-character{object-fit:contain;max-height:100%;}
+#photo-screen .character-ai-status{position:relative;z-index:1;}
+@media (max-width:600px){
+  #photo-screen .character-example-canvas{aspect-ratio:3 / 4!important;}
+}
+/* Yalnızca galeriden seçilen görüntü: başlangıçta iki alan da tamamen boş. */
+#photo-screen #photo-button::before,#photo-screen #photo-button::after{display:none!important}
+#photo-screen #photo-button>svg,#photo-screen #photo-button>span{display:none!important}
+#photo-screen #photo-button:not(.has-photo){background:transparent}
+#photo-screen #local-character,#photo-screen #manual-character,#photo-screen #manual-character-input{display:none!important}
+#photo-screen #pose-scene:empty{background:none!important}
+
+/* İstek gizliliği: başlangıçtaki boş alan ve ağ sonuçları birbirinden ayrılır. */
+[hidden] { display:none!important; }
+.access-code { width:100%; min-height:43px; padding:10px; border:1px solid #538548; border-radius:8px; background:#0c2112; color:#eaffce; font:inherit; }
+.access-label { display:block; margin:12px 0 7px; font-size:12px; color:#c3f69e; }
+</style>
+</head>
+<body>
+<div class="outer"><main class="console">
+<div class="mesh" aria-hidden="true"></div>
+<header class="top"><div class="brand"><span class="brand-glyph" aria-hidden="true">Ü</span><span>Ü</span></div><div class="top-meta"><span class="live-dot" aria-hidden="true"></span>YEŞİL KONSOL / 01</div></header>
+<section class="page" id="menu-screen" aria-labelledby="menu-title">
+<div class="menu-layout">
+<div class="main-controls">
+<div class="code">OYUN SİSTEMİ / ANA EKRAN</div>
+<h1 id="menu-title">ANA MENÜ</h1>
+<p class="sub">Profil fotoğrafını yükle, arkadaşlarınla oyuna katıl.</p>
+<nav class="menu-buttons" aria-label="Oyun menüsü">
+<button class="menu-btn" id="friends" disabled aria-describedby="locked-hint" title="Önce fotoğraf yükle"><span class="node" aria-hidden="true"><svg viewBox="0 0 24 24"><rect x="6" y="10" width="12" height="11" rx="2"/><path d="M9 10V7a3 3 0 0 1 6 0v3"/></svg></span><span class="label-text">Oyunu Arkadaşlarınla Oyna</span><span class="arrow" aria-hidden="true">›</span></button>
+<button class="menu-btn primary" id="open-photo"><span class="node" aria-hidden="true"><svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="16" rx="2"/><circle cx="8" cy="9" r="1.4"/><path d="M3 17l6-6 4 4 3-3 5 5"/></svg></span><span class="label-text">Fotoğraf Yükle</span><span class="arrow" aria-hidden="true">›</span></button>
+<button class="menu-btn" id="exit-game"><span class="node" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M12 3v9"/><path d="M7.5 5a9 9 0 1 0 9 0"/></svg></span><span class="label-text">Oyundan Çık</span><span class="arrow" aria-hidden="true">›</span></button>
+</nav>
+<p class="unlock-hint" id="locked-hint">🔒 Fotoğraf yüklenene kadar arkadaşlarla oynama kapalıdır.</p>
+</div>
+<div class="visual main-photo-side" aria-label="Yeşil enerji sembolü sağ tarafta">
+  <div class="profile-light"></div>
+  <div class="profile-frame">
+    <div class="profile-frame-top"><span class="indicator"></span> OYUN SEMBOLÜ</div>
+    <div class="main-photo-area" id="menu-photo-box">
+      <svg class="photo-placeholder orb crystal-emblem golge-v2" viewBox="0 0 400 400" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Geliştirilmiş Gölge Kristali, keskin siyah zırhlı yeşil kristal kalkan">
+<defs>
+ <radialGradient id="gv-aura"><stop stop-color="#6dff37" stop-opacity=".35"/><stop offset=".54" stop-color="#58e638" stop-opacity=".11"/><stop offset="1" stop-color="#79ff36" stop-opacity="0"/></radialGradient>
+ <linearGradient id="gv-steel" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#d5ff9c"/><stop offset=".12" stop-color="#4e9270"/><stop offset=".29" stop-color="#182e27"/><stop offset=".49" stop-color="#041510"/><stop offset=".7" stop-color="#2e6d51"/><stop offset=".87" stop-color="#0d2d22"/><stop offset="1" stop-color="#9bfd63"/></linearGradient>
+ <linearGradient id="gv-hull" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#2b6549"/><stop offset=".36" stop-color="#0b2119"/><stop offset=".68" stop-color="#07140f"/><stop offset="1" stop-color="#336d4a"/></linearGradient>
+ <linearGradient id="gv-emerald" x1="0" y1="0" x2=".95" y2="1"><stop stop-color="#f3ffbc"/><stop offset=".19" stop-color="#b8ff6d"/><stop offset=".4" stop-color="#65e658"/><stop offset=".73" stop-color="#0c894b"/><stop offset="1" stop-color="#05462f"/></linearGradient>
+ <linearGradient id="gv-edge" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#e2ffbd"/><stop offset=".55" stop-color="#6dce59"/><stop offset="1" stop-color="#bdff92"/></linearGradient>
+ <radialGradient id="gv-core"><stop stop-color="#faffdd"/><stop offset=".22" stop-color="#e4ffae"/><stop offset=".62" stop-color="#82fa43"/><stop offset="1" stop-color="#49cd37" stop-opacity="0"/></radialGradient>
+ <filter id="gv-blur" x="-85%" y="-85%" width="270%" height="270%"><feGaussianBlur stdDeviation="8"/></filter>
+ <filter id="gv-soft" x="-70%" y="-70%" width="240%" height="240%"><feGaussianBlur stdDeviation="3.5"/></filter>
+ <clipPath id="gv-crystalclip"><path d="M199 118 245 178 229 260 199 301 167 256 153 178Z"/></clipPath>
+</defs>
+<!-- orbital energy -->
+<circle cx="200" cy="197" r="187" fill="url(#gv-aura)"/>
+<circle class="rim" cx="200" cy="198" r="169" fill="none" stroke="#92ff57" stroke-width="2" stroke-dasharray="5 20" opacity=".38"/>
+<circle class="rim r2" cx="200" cy="198" r="150" fill="none" stroke="#72dd43" stroke-width="2.5" stroke-dasharray="32 19 3 18" opacity=".3"/>
+<path d="M200 15v17M200 365v17M22 198h15M363 198h15" fill="none" stroke="#c4ff97" stroke-width="2.8" opacity=".45"/>
+<!-- outside armour forked silhouette -->
+<path d="M200 33 268 77 328 81 305 137 333 191 293 285 200 367 107 285 67 191 95 137 72 81 132 77Z" fill="#7dff44" opacity=".48" filter="url(#gv-blur)"/>
+<path d="M200 33 268 77 328 81 305 137 333 191 293 285 200 367 107 285 67 191 95 137 72 81 132 77Z" fill="url(#gv-steel)" stroke="#adff85" stroke-width="3" stroke-linejoin="miter"/>
+<path d="M200 52 261 94 307 94 290 141 309 191 281 271 200 344 119 271 91 191 110 141 93 94 139 94Z" fill="url(#gv-hull)" stroke="#102b1f" stroke-width="4"/>
+<!-- steel wing / collar blades -->
+<path d="M74 82 141 95 176 80 200 54 226 80 258 95 326 82 297 115 261 111 235 96 200 80 165 96 139 111 103 115Z" fill="#031b14" stroke="#67ad72" stroke-width="1.8"/>
+<path d="M75 84 137 91 167 94 115 108 95 136Z" fill="#5aaf79" opacity=".55"/>
+<path d="M325 84 263 91 233 94 285 108 305 136Z" fill="#123f30" opacity=".88"/>
+<path d="M200 61 233 101 200 115 167 101Z" fill="#114a29" stroke="#a8ff80" stroke-width="2"/>
+<path d="M200 61 200 111 171 100Z" fill="#d0ff8f" opacity=".5"/>
+<path d="M200 61 229 100 200 111Z" fill="#236b4a"/>
+<!-- thicker secondary armour ring -->
+<path d="M200 97 271 134 288 190 267 261 200 319 133 261 112 190 129 134Z" fill="#020e0c" stroke="#559c69" stroke-width="5"/>
+<path d="M200 107 258 142 274 191 252 251 200 295 148 251 126 191 142 142Z" fill="#082117" stroke="#5dce5a" stroke-width="2" opacity=".95"/>
+<!-- left/right blade facets -->
+<path d="M113 150 145 122 162 147 147 210 123 244 101 194Z" fill="#367457" opacity=".8"/>
+<path d="M287 150 255 122 238 147 253 210 277 244 299 194Z" fill="#0b3428" opacity=".96"/>
+<path d="M101 193 124 241 147 210 153 249 119 266Z" fill="#1b5d3d" opacity=".78"/>
+<path d="M299 193 276 241 253 210 247 249 281 266Z" fill="#082b20" opacity=".92"/>
+<path d="M146 122 165 146 149 207 138 178Z" fill="#aeff7d" opacity=".36"/>
+<path d="M254 122 235 146 251 207 262 178Z" fill="#53cc5a" opacity=".22"/>
+<path d="M120 157 141 140M280 157 259 140" fill="none" stroke="#e6ffbc" stroke-width="4" opacity=".65" stroke-linecap="round"/>
+<path d="M114 212 134 240 143 224M286 212 266 240 257 224" fill="none" stroke="#9de778" stroke-width="3" opacity=".6"/>
+<!-- lower armored chevrons -->
+<path d="M123 271 169 295 200 335 231 295 277 271 249 316 200 354 151 316Z" fill="#051910" stroke="#52895a" stroke-width="2.5"/>
+<path d="M122 271 166 294 200 334 171 324Z" fill="#8ee764" opacity=".42"/>
+<path d="M278 271 234 294 200 334 229 324Z" fill="#2a7249" opacity=".45"/>
+<!-- green rune circuits -->
+<g fill="none" stroke="#7ff85c" stroke-linecap="round" stroke-linejoin="miter" opacity=".65">
+ <path d="M143 156 152 169 147 198M257 156 248 169 253 198" stroke-width="2.2"/>
+ <path d="M150 256 171 271M250 256 229 271" stroke-width="2"/>
+ <path d="M200 104v17M196 325l4 6 4-6" stroke-width="2.3"/>
+</g>
+<!-- main faceted dark green crystal and cast aura -->
+<path d="M199 118 245 178 229 260 199 301 167 256 153 178Z" fill="#6aff49" opacity=".42" filter="url(#gv-soft)"/>
+<path d="M199 118 245 178 229 260 199 301 167 256 153 178Z" fill="url(#gv-emerald)" stroke="#d8ffae" stroke-width="4.2" stroke-linejoin="round"/>
+<g clip-path="url(#gv-crystalclip)">
+ <path d="M199 118 153 178 178 195Z" fill="#efffb9" opacity=".86"/>
+ <path d="M199 118 245 178 217 196Z" fill="#a8ff6a" opacity=".88"/>
+ <path d="M153 178 178 195 167 256Z" fill="#39b75d"/>
+ <path d="M245 178 217 196 229 260Z" fill="#0d613c"/>
+ <path d="M178 195 199 301 167 256Z" fill="#66de50"/>
+ <path d="M217 196 199 301 229 260Z" fill="#11693f"/>
+ <path d="M199 118 217 196 199 301 178 195Z" fill="#b1ff80" opacity=".43"/>
+ <path d="M199 118v183M153 178l92 0M178 195l-11 61M217 196l12 64" fill="none" stroke="#ddffac" stroke-width="1.6" opacity=".46"/>
+ <path d="M165 174 184 147 193 179 177 193Z" fill="#fbffea" opacity=".25"/>
+</g>
+<!-- four shard satellites -->
+<g stroke="#c1ff9c" stroke-width="2" stroke-linejoin="miter">
+ <path d="M128 186 163 165 158 229 120 242Z" fill="#5cce63"/>
+ <path d="M272 186 237 165 242 229 280 242Z" fill="#2b9259"/>
+ <path d="M160 272 186 280 177 313 145 293Z" fill="#43b950"/>
+ <path d="M240 272 214 280 223 313 255 293Z" fill="#18754a"/>
+</g>
+<path d="M128 186 150 184 120 242Z" fill="#dbff9c" opacity=".5"/>
+<path d="M272 186 249 184 280 242Z" fill="#bbff78" opacity=".32"/>
+<!-- light fault lines -->
+<path d="M200 137 188 181 206 196 190 240 200 277" fill="none" stroke="#ebffc4" stroke-width="2.5" opacity=".46"/>
+<path class="crystal-pulse" d="M200 156 207 189 238 201 207 211 200 252 192 211 161 201 192 190Z" fill="#e9ffb4" opacity=".61"/>
+<circle cx="200" cy="201" r="22" fill="url(#gv-core)" opacity=".84"/>
+<path class="crystal-sheen" d="M139 104 153 95 275 266 258 280Z" fill="#e7ffe3" opacity=".18"/>
+<!-- sparks / glyph -->
+<g class="crystal-sparks" fill="#dfffa8" stroke="#c8ff8c" stroke-linecap="round">
+ <circle cx="83" cy="160" r="2.5"/><circle cx="317" cy="260" r="2.7"/>
+ <path d="M325 48v19M315 57h20M69 281v10M64 286h10" fill="none" stroke-width="2.3"/>
+</g>
+</svg>
+      <img id="menu-photo" alt="Oyuncunun seçtiği profil fotoğrafı">
+      <span class="main-photo-empty" id="menu-photo-empty">FOTOĞRAF BEKLENİYOR</span>
+    </div>
+    <div class="profile-frame-footer" id="menu-photo-state">PROFİL / KİLİTLİ</div>
+  </div>
+  <div class="visual-tag">◈ PROFİL SİSTEMİ <strong>Ü // ACTIVE</strong></div>
+</div>
+</div>
+</section>
+<section class="page" id="photo-screen" aria-labelledby="photo-title" hidden>
+<div class="photo-layout">
+<div class="photo-copy">
+<button class="back" id="back-home" type="button">‹ &nbsp; ANA MENÜYE DÖN</button>
+<div class="code">OYUNCU PROFİLİ / 02</div>
+<h1 class="photo-heading" id="photo-title">FOTOĞRAF YÜKLE</h1>
+<p class="photo-lead">Galerinden bir fotoğraf seç. Üstte yalnızca seçtiğin fotoğraf görünür. Yapay zekâ başarılı olana kadar alttaki karakter alanı boş kalır.</p>
+<p class="photo-status" id="photo-status" role="status" aria-live="polite">Fotoğraf henüz yüklenmedi.</p>
+<div class="photo-tools">
+<div class="serial">◉ PROFİL KAYIT PANELİ</div>
+<div class="steps" aria-label="Fotoğraf yükleme aşamaları"><div class="step active" id="step-select"><span class="num">01</span> Fotoğraf Seç</div><div class="step" id="step-loading"><span class="num">02</span> Fotoğraf Yükleniyor</div><div class="step" id="step-complete"><span class="num">03</span> Tamamlandı</div></div>
+<input class="file-input" id="file-input" type="file" accept="image/*" aria-label="Telefon galerisinden fotoğraf seç">
+<button class="tool-btn" id="choose-photo">GALERİDEN FOTOĞRAF SEÇ</button>
+<button class="tool-btn alt" id="remove-photo" disabled>FOTOĞRAFI KALDIR</button>
+
+<div id="access-box" hidden>
+  <label class="access-label" for="access-code">Özel yayında erişim kodu</label>
+  <input class="access-code" id="access-code" type="password" autocomplete="off" placeholder="Sunucunun erişim kodu">
+  <button class="tool-btn alt" id="access-submit" type="button">KODU KULLAN VE DÖNÜŞTÜR</button>
+</div>
+<p class="tiny-info">Telefon galerisinden fotoğraf seçebilirsin. Desteklenen resimler en fazla 20 MB olabilir. AI dönüşümü etkinse fotoğraf sunucu üzerinden görsel servisine iletilir.</p>
+</div>
+</div>
+<div class="preview-panel">
+<div class="preview-label">ÖNİZLEME ALANI</div>
+<button class="photo-frame" id="photo-button" type="button" aria-label="Galeriden fotoğraf seç veya değiştir"><img id="preview" alt="Yalnızca galeriden seçilen fotoğraf"></button>
+<p class="preview-note">Yalnızca galeriden seçtiğin fotoğraf üstte görünür. AI başarılıysa oluşturulan 2D karakter altta gösterilir. Fotoğraf seçilmeden iki alan da boştur.</p>
+<div class="character-example" aria-label="Eklenen karakter görseli">
+<div class="character-example-heading"><span class="indicator" aria-hidden="true"></span> EKLENEN KARAKTER GÖRSELİ</div>
+<div class="character-example-canvas" id="character-example-canvas" aria-label="Galeriden seçilen kişiden üretilen karakter"><div class="pose-scene" id="pose-scene"></div></div>
+<p class="character-ai-status" id="character-ai-status" role="status" aria-live="polite" hidden></p>
+<button class="character-retry" type="button" id="create-character" hidden>YAPAY ZEKÂ İLE KARAKTER OLUŞTUR</button>
+<p class="model-info" id="model-info">Fotoğrafın, yalnızca dönüştürme isteği için sunucu üzerinden OpenAI görsel servisine iletilir. Sunucu fotoğrafını veya sonucu dosyaya kaydetmez. Bu HTML’yi tek başına telefonda açmak, gerçek AI üretimi için yeterli değildir; yayınlanan uygulama adresinden açılmalıdır. AI sonucu beklendiği gibi görünmeyebilir; başarı teknik olarak görüntünün üretilmesini ifade eder.</p>
+<div class="pose-picker" id="pose-picker" hidden aria-label="Karakter pozu seç">
+<button type="button" class="pose-chip" data-pose="0" aria-label="Savunma pozu">1</button>
+<button type="button" class="pose-chip" data-pose="1" aria-label="Yumruk pozu">2</button>
+<button type="button" class="pose-chip" data-pose="2" aria-label="Hamle pozu">3</button>
+<button type="button" class="pose-chip motion-toggle" id="motion-toggle" aria-pressed="true" aria-label="Karakter animasyonunu durdur">Durdur</button>
+</div>
+</div>
+</div>
+</div>
+</section>
+<div class="busy-layer" id="busy-layer" hidden role="status" aria-live="assertive"><div class="busy-card"><div class="busy-spin" aria-hidden="true"></div><h2 class="busy-title">Fotoğraf yükleniyor...</h2><p class="busy-label">2. Aşama / Profilin hazırlanıyor</p><div class="loading-line" aria-hidden="true"><div></div></div></div></div>
+<footer class="footer"><span>◈ Ü · YEŞİL KONSOL</span><strong id="profile-label">PROFİL BEKLENİYOR</strong></footer>
+</main></div>
+<div class="modal" id="notice" hidden role="dialog" aria-modal="true" aria-labelledby="notice-title"><div class="modal-box"><h2 id="notice-title">Bilgi</h2><p id="notice-text"></p><button id="notice-close">TAMAM</button></div></div>
+<script>
+(()=>{
+'use strict';
+const $=s=>document.querySelector(s);
+const home=$('#menu-screen'), photo=$('#photo-screen');
+const friends=$('#friends'), gate=$('#locked-hint'), badge=$('#profile-label');
+const fileInput=$('#file-input'), choose=$('#choose-photo'), remove=$('#remove-photo');
+const photoButton=$('#photo-button'), preview=$('#preview'), status=$('#photo-status');
+const menuPhoto=$('#menu-photo'), menuPhotoBox=$('#menu-photo-box'), menuPhotoState=$('#menu-photo-state');
+const busy=$('#busy-layer'), scene=$('#pose-scene'), picker=$('#pose-picker');
+const poseButtons=[...document.querySelectorAll('.pose-chip[data-pose]')];
+const motionButton=$('#motion-toggle'), characterStatus=$('#character-ai-status');
+const retry=$('#create-character'), notice=$('#notice');
+const accessBox=$('#access-box'), accessInput=$('#access-code'), accessSubmit=$('#access-submit');
+const stepSelect=$('#step-select'),stepLoading=$('#step-loading'),stepComplete=$('#step-complete');
+let chosenImageURL=null, photoPayload=null, requestAbort=null, selectionId=0, generationId=0, resultImageURL=null;
+let resultImage=null, pose=0, motion=true, accessToken='', serverInfo=null, activeJobId=null;
+function stages(index){
+  [stepSelect,stepLoading,stepComplete].forEach((el,i)=>{el.classList.toggle('active',i===index);el.classList.toggle('done',i<index)});
+}
+function message(text,isError=false){
+  characterStatus.hidden=!text;
+  characterStatus.textContent=text||'';
+  characterStatus.classList.toggle('error',isError);
+}
+function blankCharacter(){
+  if(resultImageURL){URL.revokeObjectURL(resultImageURL);resultImageURL=null;}
+  resultImage=null;scene.replaceChildren();picker.hidden=true;
+  retry.hidden=true;retry.disabled=true;
+  message('');
+}
+function renderCharacter(){
+  if(!resultImage){scene.replaceChildren();picker.hidden=true;return;}
+  poseButtons.forEach(b=>{let on=Number(b.dataset.pose)===pose;b.classList.toggle('active',on);b.setAttribute('aria-pressed',String(on))});
+  const image=document.createElement('img');image.className='generated-character pose-'+pose;
+  image.alt='Galeriden yüklenen kişiden oluşturulmuş AI taktik karakter';
+  image.src=resultImage;image.draggable=false;
+  scene.replaceChildren(image);picker.hidden=false;scene.classList.toggle('is-paused',!motion);
+}
+function changeScreen(showPhoto){home.hidden=showPhoto;photo.hidden=!showPhoto;}
+function showModal(text){$('#notice-text').textContent=text;notice.hidden=false;$('#notice-close').focus()}
+$('#notice-close').addEventListener('click',()=>notice.hidden=true);
+$('#open-photo').addEventListener('click',()=>changeScreen(true));
+$('#back-home').addEventListener('click',()=>changeScreen(false));
+$('#friends').addEventListener('click',()=>showModal('Arkadaşlarla oynama ekranı bu menüde henüz sunucuya bağlanmadı. Bu sürüm, fotoğrafı AI ile karaktere dönüştürme sistemini çalıştırır.'));
+$('#exit-game').addEventListener('click',()=>showModal('Uygulamadan çıkmak için bu sekmeyi kapatabilirsin.'));
+for(const b of [choose,photoButton])b.addEventListener('click',()=>fileInput.click());
+poseButtons.forEach(b=>b.addEventListener('click',()=>{pose=Number(b.dataset.pose);renderCharacter()}));
+motionButton.addEventListener('click',()=>{motion=!motion;motionButton.textContent=motion?'Durdur':'Oynat';motionButton.setAttribute('aria-pressed',String(motion));scene.classList.toggle('is-paused',!motion)});
+function sendCancel(jobId){
+  if(!jobId)return;
+  void fetch('/api/jobs/'+jobId,{
+    method:'DELETE',headers:{...(accessToken?{'X-App-Access-Token':accessToken}:{})},cache:'no-store'
+  }).catch(()=>{});
+}
+function cancelRequest(){
+  generationId++;
+  if(requestAbort){requestAbort.abort();requestAbort=null;}
+  if(activeJobId){const jobId=activeJobId;activeJobId=null;sendCancel(jobId);}
+}
+function clearSelected(){
+  selectionId++;cancelRequest();
+  if(chosenImageURL){URL.revokeObjectURL(chosenImageURL);chosenImageURL=null;}
+  photoPayload=null;blankCharacter();
+  preview.removeAttribute('src');menuPhoto.removeAttribute('src');
+  menuPhotoBox.classList.remove('has-photo');menuPhotoState.textContent='PROFİL / KİLİTLİ';
+  photoButton.classList.remove('has-photo');
+  friends.disabled=true;gate.hidden=false;badge.textContent='PROFİL BEKLENİYOR';
+  friends.title='Önce fotoğraf yükle';friends.setAttribute('aria-describedby','locked-hint');
+  remove.disabled=true;status.textContent='Fotoğraf henüz yüklenmedi.';
+  stages(0);fileInput.value='';
+}
+remove.addEventListener('click',clearSelected);
+function parseFile(file){
+  if(!file||(!file.type.startsWith('image/')&&!/\.(jpe?g|png|webp|heic|heif|avif)$/i.test(file.name)))throw new Error('Lütfen galeriden bir resim seç.');
+  if(file.size>20*1024*1024)throw new Error('Fotoğraf 20 MB sınırını aşıyor.');
+}
+async function makeOptimizedPhoto(image){
+  const max=1280, ratio=Math.min(1,max/Math.max(image.naturalWidth,image.naturalHeight));
+  const c=document.createElement('canvas');c.width=Math.max(1,Math.round(image.naturalWidth*ratio));
+  c.height=Math.max(1,Math.round(image.naturalHeight*ratio));
+  const ctx=c.getContext('2d');if(!ctx)throw new Error('Fotoğraf okunamadı.');
+  ctx.fillStyle='#ffffff';ctx.fillRect(0,0,c.width,c.height);
+  ctx.drawImage(image,0,0,c.width,c.height);
+  return c.toDataURL('image/jpeg',.85);
+}
+async function imageDecoded(uri){
+  const i=new Image();i.src=uri;
+  if(i.decode)await i.decode();
+  else await new Promise((res,rej)=>{i.onload=res;i.onerror=rej});
+  if(!i.naturalWidth||!i.naturalHeight)throw new Error('Geçersiz resim.');
+  if(i.naturalWidth*i.naturalHeight>45000000)throw new Error('Fotoğraf çözünürlüğü çok yüksek.');
+  return i;
+}
+function appliedPhoto(url){
+  preview.src=url;menuPhoto.src=url;
+  menuPhotoBox.classList.add('has-photo');photoButton.classList.add('has-photo');
+  menuPhotoState.textContent='PROFİL / HAZIR';
+  friends.disabled=false;gate.hidden=true;badge.textContent='PROFİL HAZIR';
+  friends.removeAttribute('title');friends.removeAttribute('aria-describedby');
+  remove.disabled=false;stages(2);
+}
+fileInput.addEventListener('change',async()=>{
+  const f=fileInput.files?.[0];fileInput.value='';if(!f)return;
+  const ticket=++selectionId;
+  cancelRequest();blankCharacter();
+  if(chosenImageURL){URL.revokeObjectURL(chosenImageURL);chosenImageURL=null;}
+  photoPayload=null;preview.removeAttribute('src');menuPhoto.removeAttribute('src');
+  menuPhotoBox.classList.remove('has-photo');photoButton.classList.remove('has-photo');
+  remove.disabled=true;friends.disabled=true;gate.hidden=false;
+  stages(1);status.textContent='Galeriden seçilen fotoğraf açılıyor...';
+  choose.disabled=true;busy.hidden=false;
+  let url=null;
+  try{
+    parseFile(f);
+    url=URL.createObjectURL(f);
+    const pic=await imageDecoded(url);
+    if(ticket!==selectionId){URL.revokeObjectURL(url);return;}
+    // Fotoğrafı AI beklemeden hemen göster; AI sonucunu önizleme olarak kullanma.
+    chosenImageURL=url;appliedPhoto(url);url=null;
+    status.textContent='Fotoğraf başarıyla seçildi. Önizleme hazır.';
+    busy.hidden=true;choose.disabled=false;
+    // Yalnızca AI sunucusuna gönderilecek görüntüyü küçültürüz.
+    const compressed=await makeOptimizedPhoto(pic);
+    if(ticket!==selectionId)return;
+    photoPayload=compressed;
+    status.textContent='Fotoğraf yüklendi. AI sunucu bağlantısı kontrol ediliyor...';
+    void generate(ticket);
+  }catch(e){
+    if(url)URL.revokeObjectURL(url);
+    if(ticket===selectionId){
+      const detail=e.message||'Bilinmeyen sorun';
+      if(chosenImageURL){
+        status.textContent='Fotoğraf önizlemesi hazır. AI hazırlığı başarısız: '+detail;
+        message('AI karakter üretilemedi; alt alan boş kaldı.',true);
+      }else{
+        clearSelected();status.textContent='Fotoğraf seçilemedi: '+detail;
+      }
+    }
+  }finally{choose.disabled=false;busy.hidden=true;}
+});
+async function serverStatus(){
+  if(!/^https?:$/.test(location.protocol))return {ready:false,fileMode:true};
+  try{
+    const res=await fetch('/api/status',{cache:'no-store'});
+    if(!res.ok)throw new Error('Sunucu yanıt vermiyor.');
+    return await res.json();
+  }catch{return {ready:false,offline:true}}
+}
+function showAccessRequired(needed){accessBox.hidden=!needed}
+async function checkConnection(){
+  serverInfo=await serverStatus();
+  showAccessRequired(Boolean(serverInfo.requiresAccessCode));
+  return serverInfo;
+}
+async function generate(ticket=selectionId){
+  if(!photoPayload||ticket!==selectionId)return;
+  cancelRequest();const run=++generationId;
+  blankCharacter();
+  retry.hidden=false;retry.disabled=true;retry.textContent='YAPAY ZEKÂ DÖNÜŞTÜRÜLÜYOR…';
+  message('Seçtiğin kişinin fotoğrafı için gerçek AI karakteri hazırlanıyor. Üretim bitene kadar alt alan boş kalır.');
+  const controller=new AbortController();requestAbort=controller;
+  const headers={...(accessToken?{'X-App-Access-Token':accessToken}:{})};
+  const current=()=>ticket===selectionId&&run===generationId&&Boolean(photoPayload)&&!controller.signal.aborted;
+  try{
+    const info=await checkConnection();
+    if(!current())return;
+    if(!info.ready){
+      if(info.fileMode){
+        message('Fotoğraf yüklendi. AI dönüşümü için yayımlanmış Ü sunucusunun HTTPS bağlantısı gerekir. Karakter alanı boş kalır.');
+        retry.hidden=true;
+        status.textContent='Fotoğraf başarıyla yüklendi. AI sunucusu bağlı değil.';
+        return;
+      }
+      if(info.offline)throw new Error('AI sunucusuna bağlantı yok. İnternet ve yayın adresini kontrol et.');
+      throw new Error('Sunucuda OPENAI_API_KEY tanımlı değil. Hosting ayarlarına eklenmeli.');
+    }
+    if(info.requiresAccessCode&&!accessToken)throw new Error('Özel erişim kodunu girmen gerekiyor.');
+    const initRes=await fetch('/api/character',{
+      method:'POST',headers:{'Content-Type':'application/json',...headers},
+      body:JSON.stringify({image:photoPayload}),signal:controller.signal,cache:'no-store'
+    });
+    if(!initRes.ok){
+      const errorData=await initRes.json().catch(()=>({}));
+      throw new Error(errorData.error||'Üretim başlatılamadı (HTTP '+initRes.status+').');
+    }
+    if(initRes.status!==202)throw new Error('Sunucu beklenmeyen yanıt verdi.');
+    const started=await initRes.json();
+    if(!/^[a-f0-9]{36}$/.test(started.jobId||''))throw new Error('Sunucu işlem numarası döndürmedi.');
+    activeJobId=started.jobId;
+    if(!current()){sendCancel(activeJobId);activeJobId=null;return;}
+    const deadline=Date.now()+270000;
+    let iteration=0;
+    while(current()){
+      if(Date.now()>deadline)throw new Error('Görsel üretimi uzun sürdü. Bağlantıyı kontrol edip tekrar dene.');
+      await new Promise(r=>setTimeout(r,2600));
+      if(!current())return;
+      const pollRes=await fetch('/api/jobs/'+activeJobId,{headers,signal:controller.signal,cache:'no-store'});
+      const pollData=await pollRes.json().catch(()=>({}));
+      if(!pollRes.ok)throw new Error(pollData.error||'İşlem durumu öğrenilemedi (HTTP '+pollRes.status+').');
+      if(pollData.state==='completed')break;
+      if(pollData.state==='failed')throw new Error(pollData.error||'AI üretimi başarısız.');
+      if(pollData.state==='cancelled')throw new Error('AI dönüşümü iptal edildi.');
+      if(pollData.state!=='processing')throw new Error('Beklenmeyen işlem durumu.');
+      iteration++;
+      if(iteration===6)message('AI karakteri hâlâ çiziyor. İnternet açık kalsın; karakter alanı üretim tamamlanana kadar boş kalacak.');
+    }
+    if(!current())return;
+    const response=await fetch('/api/jobs/'+activeJobId+'/image',{headers,signal:controller.signal,cache:'no-store'});
+    if(!response.ok){
+      const errorData=await response.json().catch(()=>({}));
+      throw new Error(errorData.error||'Üretilen görsel alınamadı (HTTP '+response.status+').');
+    }
+    if(!response.headers.get('content-type')?.startsWith('image/png'))
+      throw new Error('Sunucu PNG görsel yerine geçersiz içerik döndürdü.');
+    const blob=await response.blob();
+    if(blob.size<500||blob.size>35*1024*1024)throw new Error('AI görselinin boyutu geçersiz.');
+    const outputURL=URL.createObjectURL(blob);
+    try{
+      const image=await imageDecoded(outputURL);
+      if(image.naturalWidth<256||image.naturalHeight<256)throw new Error('AI görseli beklenenden küçük.');
+      if(!current()){URL.revokeObjectURL(outputURL);return;}
+      resultImageURL=outputURL;resultImage=outputURL;pose=0;renderCharacter();
+    }catch(e){URL.revokeObjectURL(outputURL);throw e;}
+    const completedId=activeJobId;
+    activeJobId=null;sendCancel(completedId);
+    message('Gerçek AI sonucu alındı. Yalnızca bu oturumda seçtiğin fotoğraftan oluşturulan karakter gösteriliyor.');
+    status.textContent='Karakter oluşturma tamamlandı.';
+  }catch(e){
+    if(!current())return;
+    resultImage=null;scene.replaceChildren();picker.hidden=true;
+    message('AI dönüşümü başarısız: '+(e.message||'Bilinmeyen hata')+' Karakter alanı boş bırakıldı.',true);
+    status.textContent='Fotoğraf başarıyla yüklendi ve önizleniyor. AI dönüşümü henüz tamamlanmadı.';
+    if(activeJobId){const id=activeJobId;activeJobId=null;sendCancel(id);}
+  }finally{
+    if(ticket===selectionId&&run===generationId){
+      requestAbort=null;retry.hidden=(location.protocol==='file:');retry.disabled=false;retry.textContent='YAPAY ZEKÂ İLE TEKRAR DENE';
+    }
+  }
+}
+retry.addEventListener('click',()=>{if(photoPayload)void generate()});
+accessSubmit.addEventListener('click',()=>{accessToken=accessInput.value.trim();if(photoPayload)void generate()});
+accessInput.addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();accessSubmit.click()}});
+clearSelected();
+void checkConnection().then(info=>{
+  if(photoPayload)return;
+  if(info.fileMode){
+    status.textContent='Fotoğraf seçmeye hazır. Gerçek AI için HTML dosyasını tek başına değil, yayımlanmış Ü sunucusunun HTTPS adresinden açmalısın.';
+  }else if(info.offline){
+    status.textContent='Fotoğraf seçmeye hazır. Gerçek AI sunucusuna şu anda bağlanılamıyor.';
+  }else if(!info.ready){
+    status.textContent='Fotoğraf seçmeye hazır. Gerçek AI henüz etkin değil: sunucuda OPENAI_API_KEY eksik.';
+  }else{
+    status.textContent='Fotoğraf seçmeye hazır. AI sunucusu yapılandırılmış; gerçek üretim ilk fotoğrafla doğrulanır.';
+  }
+}).catch(()=>{});
+})();
+</script>
+</body>
+</html>
